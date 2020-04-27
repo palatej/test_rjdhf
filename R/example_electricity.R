@@ -18,11 +18,27 @@ jhol<-rjdhf::Holidays(list("Christmas", offset=-1), "Christmas", list("Christmas
 
 hol<-rjdhf::HolidaysMatrix(jhol, "1996-01-01", length = length(y), type = "Default")
 
+# adding some user-defined variables. Dummies for end of months (first obs at 1/1/leapyear)
+months<-c(31,28,31,30,31,30,31,31,30,31,30,31)
+lpmonths<-c(31,29,31,30,31,30,31,31,30,31,30,31)
+y4<-c(lpmonths,months,months,months)
+cy40<-cumsum(c(y4, y4, y4, y4, y4,y4, y4, y4, y4, y4))
+idx<-cy40[1:(Position(function(x){x>length(y)}, cy40)-1)]
+
+endofmonth1<-array(0,dim=length(y))
+endofmonth2<-array(0,dim=length(y))
+
+endofmonth1[idx]<-1
+endofmonth2[idx-1]<-1
+
+vars<-cbind(hol$ptr, endofmonth1, endofmonth2)
+
+
 # RegArima (fractional airline), using the pre-specified regression variables (X), any periodicities (all are considered together)
 # and automatic outlier detection. Possible outliers are additive outliers (ao = ...0 0 1 0 0 ...), 
 # level shifts (ls = ...0 0 1 1 1...) and "shift" outliers (wo = 0 0 1 -1 0 ...)
 
-rslt<-rjdhf::fractionalAirlineEstimation(y, x=hol$ptr, periods=c(7, 365.25), outliers=c("ao", "ls","wo"), criticalValue = 6)
+rslt<-rjdhf::fractionalAirlineEstimation(y, x=vars, periods=c(7, 365.25), outliers=c("ao", "ls","wo"), criticalValue = 6)
 
 # some output (will be improved in future releases)
 print(rslt$estimation$parameters)
