@@ -1,14 +1,16 @@
 library(rjdhf)
-uspetroleum<-read.table("./Data/uspetroleum.txt")
+#uspetroleum<-read.table("./Data/uspetroleum.txt")
+ukdeaths<-read.csv("./Data/uk_deaths.csv")
 
-y<-uspetroleum[,2]
+#y<-uspetroleum[,2]
+y<-ukdeaths[,1]
 
 # X11 applied with exact weekly periodicity
-m1<-rjdhf::x11(y, 365.25/7,seas.s1="S3X15")
+m1<-rjdhf::x11(y, 365.25/7,seas.s1="S3X5")
 
 # X11 applied with approximate weekly periodicity
 m2<-rjdhf::x11(y, 52)
-n<-dim(uspetroleum)[1]
+n<-length(y)
 
 #plot seasonal components
 idx<-(n-53):n
