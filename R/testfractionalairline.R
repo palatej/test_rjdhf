@@ -60,4 +60,22 @@ lines(decomp$i, col="green")
 
 print(summary(decomp$y-decomp$t*decomp$s*decomp$i))
 
+par(mfrow=c(1,1))
+
+## Maximum is reached very near the actual weekly periodicity (365.25/7 = 52.1786)
+#plot(test_ll(usclaims$V1, 52.15, 52.20, 0.001), type='l')
+
+#bias correction
+decomp2<-biasCorrection2(exp(rslt$model$linearized), m1$decomposition$t, m1$decomposition$s, m1$decomposition$i, 365.25/7)
+
+par(mfrow=c(2,1))
+
+plot(decomp2$y, type='l', col="gray")
+lines(decomp2$sa, col="blue")
+lines(decomp2$t, col="red")
+plot(decomp2$s, type="l", col="magenta")
+lines(decomp2$i, col="green")
+
+print(summary(decomp2$y-decomp2$t*decomp2$s*decomp2$i))
+
 par(0)

@@ -1,0 +1,136 @@
+---
+title: "PowerTransformation"
+output: html_document
+---
+
+### Power transformation (with sign)
+
+As far as modelling and decomposition with pre-specified transformations are considered, we will use power transformations instead of Box-Cox transformations: the results are identical, but derivation and interpretation are easier.
+
+We write $Y$ the variable in original scale and $y$ the transformed variable. the transformation and its reciprocal are defined by:
+
+$$ y=f(Y)=sign(Y) \lvert{Y}\rvert^{\lambda}$$
+
+$$ Y=f^{-1}(y)=sign(y) \lvert y\rvert^{1/ \lambda}$$
+
+
+We define the operator $\oplus$ between two variables as follows:
+
+$$A \oplus B = f^{-1}(f(A)+f(B))$$
+
+When $\lambda = 1$, this is the usual sum. 
+
+When $f(Y)=\log{Y}, f^{-1}(y)=e^y$, $A \oplus B = A \times B$
+
+When $\lambda=0.5$, $A \oplus B= sign(c) c^2$ where $c=sign(A)\sqrt{\lvert A \rvert}+ sign(B)\sqrt{\lvert B \rvert}$. 
+
+If we omit the signs, $A \oplus B= {\left(\sqrt A + \sqrt B \right)}^2$
+
+We define the same way the operator $\ominus$ between two variables as follows:
+
+$$A \ominus B = f^{-1}(f(A)-f(B))$$
+
+
+### Seasonal adjustment
+
+We consider now the decomposition computed on the transformed model
+
+$$ y = sa + s$$
+
+As usual, if the log transformation has been applied, the decomposition in the original scale becomes
+
+$$ Y = SA \oplus S = e^{sa}*e^s=SA*S$$
+
+After a square root transformation, we have (we suppose to simplify the notations that $sa \gt 0$ and $sa+s\gt 0$):
+
+$$ Y = SA \oplus S =  \left(sa + s \right)^2 = SA  + \lvert S \rvert + 2 sign(s) \sqrt{\lvert SA \times  S \rvert } $$
+
+$$ = SA + S +2 \sqrt{S*SA} \quad ,S \ge 0$$
+
+$$ = SA - (S + 2 \sqrt{-S*SA}) \quad ,S \lt 0 $$
+
+We can define in a similar way $sa = y - s$ ,  $t=sa-i$  ...
+
+#### Example
+
+##### Modelling using sqrt transformation
+
+```{r}
+library(rjdhf)
+
+y<-c(750,9970,9000,8620,8630,8360,1010,790,9730,9120,8500,8970,8250,1040,850,10360,10380,11130,
+     13050,12250,1580,940,13640,14760,15660,17390,17810,8040,3150,22590,24400,30000,30720,36700,
+     21110,9420,39990,37250,34920,32990,23220,13140,6020,19060,33040,28850,26930,24090,11350,5780,
+     25170,21800,20530,18290,16930,6660,4530,20930,18540,16570,15470,14980,5070,2970,17920,14670)
+
+lam <- 1/2
+z <- y^lam
+cleaning <- rjdhf::fractionalAirlineEstimation(z,
+                                               period=7,
+                                               outliers = c("ao","ls","wo"),
+                                               criticalValue = 5)
+
+tval_b <- cleaning$model$b/sqrt(diag(cleaning$model$bcov))
+data.frame(cleaning$model$variables,tval_b)
+
+# 
+
+```
+##### Decomposition of the linearized series
+
+```{r}
+y_clean <- cleaning$model$linearized
+c <- rjdhf::fractionalAirlineDecomposition(y_clean, period=7)
+
+all<-data.frame(y=c$decomp$y, t=c$decomp$t, sa=c$decomp$sa, s=c$decomp$s, i=c$decomp$i)
+print(all)
+
+```
+
+###### Back transformed series
+
+```{r}
+allc<-sign(all)*abs(all)^(1/lam)
+print(allc)
+
+plot(allc$y, type='l', col="gray")
+lines(allc$t, col="red" )
+lines(allc$sa, col="blue" )
+```
+
+
+##### Check constraints
+
+```{r}
+plus<-function(A,B, lambda){
+  a<-sign(A)*abs(A)^lambda
+  b<-sign(B)*abs(B)^lambda
+  c<-a+b
+  return (sign(c)*abs(c)^(1/lambda))
+}
+
+minus<-function(A,B, lambda){
+  a<-sign(A)*abs(A)^lambda
+  b<-sign(B)*abs(B)^lambda
+  c<-a-b
+  return (sign(c)*abs(c)^(1/lambda))
+}
+
+# Y = S + SA
+cat("y=s+sa\n")
+summary(allc$y-plus(allc$sa, allc$s, lam))
+
+#SA = Y - SA
+cat("\nsa=y-s\n")
+summary(allc$sa-minus(allc$y, allc$s, lam))
+
+#T = SA - I
+cat("\nt=sa-i\n")
+summary(allc$t-minus(allc$sa, allc$i, lam))
+
+cat("aggregation on 7 periods")
+rowsum(allc, 1+floor((0:(length(y)-1))/7))
+
+
+```
+
