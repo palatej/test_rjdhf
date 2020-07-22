@@ -18,8 +18,8 @@ lines(m2$decomposition$t, col="blue")
 y=usclaims[,2]
 rslt<-rjdhf::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
 
-m1<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7)
-m2<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, FALSE)
+m1<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, stde = T)
+m2<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, FALSE, stde=T)
 
 plot(idx, m1$decomposition$s[idx], "l")
 lines(idx, m2$decomposition$s[idx], col="red")
@@ -58,9 +58,10 @@ lines(decomp$t, col="red")
 plot(decomp$s, type="l", col="magenta")
 lines(decomp$i, col="green")
 
+
+
 print(summary(decomp$y-decomp$t*decomp$s*decomp$i))
 
-par(mfrow=c(1,1))
 
 ## Maximum is reached very near the actual weekly periodicity (365.25/7 = 52.1786)
 #plot(test_ll(usclaims$V1, 52.15, 52.20, 0.001), type='l')
@@ -77,5 +78,8 @@ plot(decomp2$s, type="l", col="magenta")
 lines(decomp2$i, col="green")
 
 print(summary(decomp2$y-decomp2$t*decomp2$s*decomp2$i))
+par(mfrow=c(1,1))
 
-par(0)
+# plot stdev 
+plot(m1$decomposition$s.stde, col="blue", type='l', ylim = c(0.015, 0.03))
+lines((m1$decomposition$t.stde), col="red")
