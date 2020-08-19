@@ -67,7 +67,7 @@ print(summary(decomp$y-decomp$t*decomp$s*decomp$i))
 #plot(test_ll(usclaims$V1, 52.15, 52.20, 0.001), type='l')
 
 #bias correction
-decomp2<-biasCorrection2(exp(rslt$model$linearized), m1$decomposition$t, m1$decomposition$s, m1$decomposition$i, 365.25/7)
+decomp2<-biasCorrection2(exp(m1$decomposition$y), m1$decomposition$t, m1$decomposition$s, m1$decomposition$i, 365.25/7)
 
 par(mfrow=c(2,1))
 
@@ -83,3 +83,8 @@ par(mfrow=c(1,1))
 # plot stdev 
 plot(m1$decomposition$s.stde, col="blue", type='l', ylim = c(0.015, 0.03))
 lines((m1$decomposition$t.stde), col="red")
+
+mf<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, stde = T, nbcasts=53, nfcasts = 53)
+len<-length(mf$decomp$y)
+plot(mf$decomposition$s[(len-3*53):len], type='l')
+plot(mf$decomposition$s.stde[(len-3*53):len], type='l')
