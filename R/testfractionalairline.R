@@ -1,8 +1,8 @@
-library(rjdhf)
+suppressPackageStartupMessages(library(rjd3highfreq))
 source("./R/bias.R")
 usclaims<-read.table("./Data/usclaims.txt")
 y=usclaims[,1]
-rslt<-rjdhf::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
+rslt<-rjd3highfreq::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
 
 m1<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7)
 m2<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, FALSE)
@@ -16,7 +16,7 @@ lines(m1$decomposition$t, col="red")
 lines(m2$decomposition$t, col="blue")
 
 y=usclaims[,2]
-rslt<-rjdhf::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
+rslt<-rjd3highfreq::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
 
 m1<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, stde = T)
 m2<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, FALSE, stde=T)

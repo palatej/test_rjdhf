@@ -1,4 +1,4 @@
-library(rjdhf)
+suppressPackageStartupMessages(library(rjd3highfreq))
 edf<-read.table("./Data/edf.txt")
 y<-log(edf[,1])
 
@@ -10,13 +10,13 @@ y<-log(edf[,1])
 # are provided in the output). 
 
 # Create holidays. See also testholidays.R for other examples and for weekly variables.
-jhol<-rjdhf::Holidays(list("Christmas", offset=-1), "Christmas", list("Christmas", offset=1),
+jhol<-rjd3highfreq::Holidays(list("Christmas", offset=-1), "Christmas", list("Christmas", offset=1),
                       c(12,31), "NewYear", list("NewYear", offset=1),
                       "EasterMonday", "MayDay", "Ascension", "WhitMonday", "Assumption", 
                       "AllSaintsDay", "Armistice",
                       c(5,8), c(7,14))
 
-hol<-rjdhf::HolidaysMatrix(jhol, "1996-01-01", length = length(y), type = "Default")
+hol<-rjd3highfreq::HolidaysMatrix(jhol, "1996-01-01", length = length(y), type = "Default")
 
 # adding some user-defined variables. Dummies for end of months (first obs at 1/1/leapyear)
 months<-c(31,28,31,30,31,30,31,31,30,31,30,31)
@@ -38,7 +38,7 @@ vars<-cbind(hol$ptr, endofmonth1, endofmonth2)
 # and automatic outlier detection. Possible outliers are additive outliers (ao = ...0 0 1 0 0 ...), 
 # level shifts (ls = ...0 0 1 1 1...) and "shift" outliers (wo = 0 0 1 -1 0 ...)
 
-rslt<-rjdhf::fractionalAirlineEstimation(y, x=vars, periods=c(7, 365.25), outliers=c("ao", "ls","wo"), criticalValue = 6)
+rslt<-rjd3highfreq::fractionalAirlineEstimation(y, x=vars, periods=c(7, 365.25), outliers=c("ao", "ls","wo"), criticalValue = 6)
 
 # some output (will be improved in future releases)
 print(rslt$estimation$parameters)
@@ -49,8 +49,8 @@ print(rslt$model$b/sqrt(diag(rslt$model$bcov)))
 # linearized series (y-Xb)      
 lin<-rslt$model$linearized
 
-c<-rjdhf::fractionalAirlineDecomposition(lin, period=7, TRUE)
-c1<-rjdhf::fractionalAirlineDecomposition(c$decomposition$sa, period=365.25, adjust = FALSE)
+c<-rjd3highfreq::fractionalAirlineDecomposition(lin, period=7, TRUE)
+c1<-rjd3highfreq::fractionalAirlineDecomposition(c$decomposition$sa, period=365.25, adjust = FALSE)
 # final decomposition (w=weekly component, s=annual component. Final seasonal component is w+s (+calendar effets))
 w<-c$decomposition$s
 t<-c1$decomposition$t

@@ -1,17 +1,17 @@
-library(rjdhf)
+suppressPackageStartupMessages(library(rjd3highfreq))
 traffic<-read.csv("./Data/traffic.csv")
 y<-traffic[,2]
 
 # Create holidays. See also testholidays.R for other examples and for weekly variables.
-jhol<-rjdhf::Holidays("NewYear",c(3, 21), "GoodFriday", "EasterMonday", "MayDay", c(6,16),
+jhol<-rjd3highfreq::Holidays("NewYear",c(3, 21), "GoodFriday", "EasterMonday", "MayDay", c(6,16),
                       c(8, 9), c(9, 24), c(12, 16), "Christmas", list("Christmas", offset=1))
 
-hol<-rjdhf::HolidaysMatrix(jhol, "1994-01-01", length = length(y), type = "Default")
+hol<-rjd3highfreq::HolidaysMatrix(jhol, "1994-01-01", length = length(y), type = "Default")
 vars<-hol$ptr
 
 # RegArima (fractional airline), using the pre-specified regression variables (X), any periodicities (all are considered together)
 
-rslt<-rjdhf::fractionalAirlineEstimation(y, x=vars, periods=c(7, 365.25))
+rslt<-rjd3highfreq::fractionalAirlineEstimation(y, x=vars, periods=c(7, 365.25))
 
 # some output (will be improved in future releases)
 print(rslt$estimation$parameters)
@@ -22,8 +22,8 @@ print(rslt$model$b/sqrt(diag(rslt$model$bcov)))
 # linearized series (y-Xb)      
 lin<-rslt$model$linearized
 
-c<-rjdhf::fractionalAirlineDecomposition(lin, period=7, TRUE)
-c1<-rjdhf::fractionalAirlineDecomposition(c$decomposition$sa, period=365.25, adjust = FALSE)
+c<-rjd3highfreq::fractionalAirlineDecomposition(lin, period=7, TRUE)
+c1<-rjd3highfreq::fractionalAirlineDecomposition(c$decomposition$sa, period=365.25, adjust = FALSE)
 # final decomposition (w=weekly component, s=annual component. Final seasonal component is w+s (+calendar effets))
 w<-c$decomposition$s
 t<-c1$decomposition$t
@@ -41,7 +41,7 @@ lines(seatsdecomp[(n-400):n, "sa"], col="blue")
 lines(seatsdecomp[(n-400):n, "t"], col="red")
 
 elin<-lin[(n-228):n]
-ec<-rjdhf::fractionalAirlineDecomposition(elin, period=7, TRUE)
+ec<-rjd3highfreq::fractionalAirlineDecomposition(elin, period=7, TRUE)
 # final decomposition (w=weekly component, s=annual component. Final seasonal component is w+s (+calendar effets))
 ew<-ec$decomposition$s
 et<-ec$decomposition$t
