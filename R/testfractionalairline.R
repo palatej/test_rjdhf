@@ -5,7 +5,7 @@ y=usclaims[,1]
 rslt<-rjd3highfreq::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
 
 m1<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7)
-m2<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, FALSE)
+m2<-fractionalAirlineDecomposition(rslt$model$linearized, 52)
 n<-length(y)
 idx<-(n-206):n
 plot(idx, m1$decomposition$s[idx], "l")
@@ -19,7 +19,7 @@ y=usclaims[,2]
 rslt<-rjd3highfreq::fractionalAirlineEstimation(log(y), periods=c(365.25/7), outliers=c("ao"), criticalValue = 6)
 
 m1<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, stde = T)
-m2<-fractionalAirlineDecomposition(rslt$model$linearized, 365.25/7, FALSE, stde=T)
+m2<-fractionalAirlineDecomposition(rslt$model$linearized, 52, stde=T)
 
 plot(idx, m1$decomposition$s[idx], "l")
 lines(idx, m2$decomposition$s[idx], col="red")
