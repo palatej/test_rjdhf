@@ -71,13 +71,24 @@ i<-c1$decomposition$i
 
 seatsdecomp<-cbind(lin,t,sa,w,s,i)
 
-c2<-rjd3highfreq::multiAirlineDecomposition(lin, periods=c(7, 365), ndiff=3)
+c2<-rjd3highfreq::multiAirlineDecomposition(lin, periods=c(7, 365.25), ndiff=2)
 w<-c2$decomposition[[2]]
 t<-c2$decomposition[[1]]
 s<-c2$decomposition[[3]]
 i<-c2$decomposition[[4]]
 sa<-t+i
 seatsdecomp2<-cbind(lin,t,sa,w,s,i)
+
+m3<-fractionalAirlineEstimation(lin, periods=c(7, 365), ndiff=3)
+
+
+c3<-rjd3highfreq::multiAirlineDecomposition(lin, periods=c(7, 365.25), ndiff=3)
+w<-c3$decomposition[[2]]
+t<-c3$decomposition[[1]]
+s<-c3$decomposition[[3]]
+#i<-c3$decomposition[[4]]
+#sa<-t+i
+seatsdecomp3<-cbind(lin,t,w,s)
 
 
 # Some charts. In this example, we can see that weekly component and annual component are not independent.

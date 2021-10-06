@@ -47,7 +47,7 @@ stldecomp<-cbind(y,t,sa,w, s,i)
 
 c<-rjd3highfreq::fractionalAirlineDecomposition(log(y), period=7)
 #c1<-rjd3highfreq::fractionalAirlineDecomposition(c$decomposition$sa, period=365.25)
-c1<-rjd3highfreq::multiAirlineDecomposition(c$decomposition$sa, period=365.25, ndiff = 1)
+c1<-rjd3highfreq::multiAirlineDecomposition(c$decomposition$sa, period=365.25, ndiff = 2)
 wc<-c1$decomposition$s
 plot(wc[2000:2500], type="l")
 
@@ -59,7 +59,7 @@ s<-c1$decomposition$s
 i<-c1$decomposition$i
 seatsdecomp<-cbind(y,t,sa,w, s,i)
    
-d<-rjd3highfreq::multiAirlineDecomposition(log(y), periods=c(7, 365.25), ndiff = 2)
+d<-rjd3highfreq::multiAirlineDecomposition(log(y), periods=c(7, 365.25), ndiff = 3)
 wd<-d$decomposition[[3]]
 plot(wd[2000:2500], type="l")
 
@@ -67,6 +67,6 @@ plot(wd[2000:2500], type="l")
 w<-d$decomposition[[2]]
 t<-d$decomposition[[1]]
 s<-d$decomposition[[3]]
-i<-d$decomposition[[4]]
-sa<-t+i
-seatsdecomp2<-cbind(y,t,sa,w, s,i)
+#i<-d$decomposition[[4]]
+#sa<-t+i
+seatsdecomp2<-cbind(y,t,sa,w, s)

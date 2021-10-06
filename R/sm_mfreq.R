@@ -1,5 +1,7 @@
 suppressPackageStartupMessages(library(rjd3sts))
 
+har<-1:11
+
 sm_daily<-function(y){
   # create the model
   sm<-rjd3sts::model()
@@ -7,11 +9,11 @@ sm_daily<-function(y){
   # create the components and add them to the model
   rjd3sts::add(sm, rjd3sts::noise("n"))
   rjd3sts::add(eq, "n")
-  rjd3sts::add(sm, rjd3sts::locallineartrend("ll"))
+  rjd3sts::add(sm, rjd3sts::locallevel("ll"))
   rjd3sts::add(eq, "ll")
-  rjd3sts::add(sm, rjd3sts::seasonal("s", 7, type="Crude"))
+  rjd3sts::add(sm, rjd3sts::seasonal("s", 7, type="HarrisonStevens"))
   rjd3sts::add(eq, "s")
-  rjd3sts::add(sm, rjd3sts::periodic("y", period=365.25, harmonics=1:13))
+  rjd3sts::add(sm, rjd3sts::periodic("y", period=365.25, harmonics=har))
   rjd3sts::add(eq, "y")
   rjd3sts::add(sm, eq)
   #estimate the model
@@ -29,4 +31,6 @@ y<-edf[,1]
 #y<-traffic[,2]
 
 a<-sm_daily(log(y))
-
+sa<-result(a, "ssf.smoothing.states")
+pos<-result(a, "ssf.cmppos")
+plot(rowSums(sa[, pos[4]+seq(1, length(har)*2-1,2)]), type='l')

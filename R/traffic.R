@@ -54,3 +54,5 @@ plot(y[(n-228):n], type="l", col="gray")
 lines(esa, col="blue")
 lines(et, col="red")
 lines(seatsdecomp[(n-228):n, "sa"], col="green")
+
+rslt_out<-rjd3highfreq::fractionalAirlineEstimation(y, x=vars, periods=c(7), outliers = c('ao', 'ls'), criticalValue = 10)
